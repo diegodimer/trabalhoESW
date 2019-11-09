@@ -24,7 +24,7 @@ public class TeacherInterface implements GUIFactory{
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JLabel lblLogin = new JLabel("REGISTER");
+		JLabel lblLogin = new JLabel("TEACHER");
 		frame.getContentPane().add(lblLogin, BorderLayout.WEST);
 	}
 
