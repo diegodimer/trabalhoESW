@@ -1,4 +1,6 @@
 package reunio;
+import java.util.List;
+
 import reunioExceptions.invalidInviteException;
 
 public class Teacher extends User {
@@ -20,6 +22,17 @@ public class Teacher extends User {
 		db.addInvite(invite);	
 	}
 	
+	// metodo para listar as reuniões de um estudante orientado pelo professor
+	public List<Meeting> listUserMeetings(Student user){
+		Database db = new Database();
+		List<Meeting> list = db.listUserMeetings(user);
+		return list;
+	}
 	
+	//metodo de marcar reunião
+	public void bookMeeting(Meeting meeting) {
+		Database db = new Database();
+		db.createMeeting(meeting);
+	}
 
 }

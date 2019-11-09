@@ -53,4 +53,28 @@ public abstract class User {
 	public void setNotifications(List<Invite> notifications) {
 		this.notifications = notifications;
 	}
+	
+	public void declineInvite(Invite invite) {
+		this.notifications.remove(invite);
+		Database db = new Database();
+		db.deleteInvite(invite);
+	}
+	
+	public void acceptInvite(Invite invite) {
+		InviteType tipo = invite.getType();
+		Database db = new Database();
+		// eu posso passar o invite aqui pq vou usar o ID pra adicionar ao grupo!
+		if (tipo == InviteType.GROUP) {
+			db.addUserToGroup(this, invite);
+		} else if (tipo == InviteType.MEETING) {
+			db.addUserToMeeting(this, invite); 
+		}
+		db.deleteInvite(invite);
+	}
+	
+	public List<Meeting> listMyPastMeetings(){
+		Database db = new Database();
+		List<Meeting> list = db.listUserMeetings(this);
+		return list;
+	}
 }

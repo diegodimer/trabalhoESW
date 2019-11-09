@@ -4,9 +4,8 @@ public abstract class Invite {
 	private User from;
 	private User to;
 	private InviteType type;
+	private int ID;
 	
-	public abstract void acceptInvite();
-	public abstract void declineInvite();
 	
 	public User getFrom() {
 		return from;
@@ -30,6 +29,12 @@ public abstract class Invite {
 
 	public void setType(InviteType type) {
 		this.type = type;
+	}
+	public int getID() {
+		return ID;
+	}
+	public void setID(int iD) {
+		ID = iD;
 	}
 	
 }
