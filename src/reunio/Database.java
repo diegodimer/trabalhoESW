@@ -2,6 +2,7 @@ package reunio;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Database implements DataPersistenceInterface {
@@ -10,7 +11,7 @@ public class Database implements DataPersistenceInterface {
 	// eu chamo a função de conectar, se não eu não faço nada no construtor.
 	private static Connection conec = null;
 	
-	Database(){
+	public Database(){
 		if (conec == null)
 			connect();
 	}
@@ -55,6 +56,212 @@ public class Database implements DataPersistenceInterface {
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
+	}
+
+	@Override
+	public void findGroup(Group group) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void createGroup(Group group) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateGroup(Group group) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteGroup(Group group) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<User> findUser(User user) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void createUser(User user) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateUser(User user) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteUser(User user) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Meeting> findMeeting(Meeting meeting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void createMeeting(Meeting meeting) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateMeeting(Meeting meeting) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteMeeting(Meeting meeting) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Report> findReport(Report report) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void createReport(Report report) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateReport(Report report) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteReport(Report report) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Note> findNote(Note note) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void createNote(Note note) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateNote(Note note) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteNote(Note note) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean authenticateUser(User user, String password) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<Curso> getCursos() {
+		List<Curso> lista = new ArrayList<Curso>();
+		
+		for (int i=0; i<5;i++) {
+			Curso c = new Curso();
+			c.setNome("a".concat(String.valueOf(i)));
+			lista.add(c);	
+		}
+		
+		
+		return lista;
+	}
+
+	@Override
+	public Curso getCurso(int ID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addInvite(Invite invite) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteInvite(Invite invite) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addUserToGroup(User user, Invite group) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addUserToMeeting(User user, Invite meeting) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Meeting> listUserMeetings(User user) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Meeting> listUserMeetings(User user, String time) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Group> listUserGroups(User user) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Group> listUserPastGroups(User user) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeUserFromGroup(User user, Group group) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeUserFromMeeting(User user, Meeting meeting) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

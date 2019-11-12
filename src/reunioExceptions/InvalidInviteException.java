@@ -1,8 +1,8 @@
 package reunioExceptions;
 
-public class invalidInviteException extends Exception {
+public class InvalidInviteException extends Exception {
 
-	public invalidInviteException(String string) {
+	public InvalidInviteException(String string) {
 		super(string);
 	}
 

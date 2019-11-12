@@ -8,10 +8,15 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import reunio.Application;
 import reunio.Student;
+import reunio.User;
+import reunioExceptions.LoginErrorException;
+
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -21,6 +26,9 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.Label;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.Font;
 
 public class LoginInterface implements GUIFactory {
 
@@ -47,8 +55,30 @@ public class LoginInterface implements GUIFactory {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
+		JLabel logoutImg = new JLabel("");
+		logoutImg.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String ObjButtons[] = {"Sim","Não"};
+		        int PromptResult = JOptionPane.showOptionDialog(null,"Tem certeza que deseja sair?","REUNio",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
+		        if(PromptResult==JOptionPane.YES_OPTION)
+		        {
+		            System.exit(0);
+		        }
+			}
+		});
+		
+		JLabel lblSair = new JLabel("Sair");
+		lblSair.setFont(new Font("Tahoma", Font.PLAIN, 40));
+		lblSair.setBounds(380, 553, 66, 49);
+		frame.getContentPane().add(lblSair);
+		logoutImg.setIcon(new ImageIcon(LoginInterface.class.getResource("/reunioImages/logout.png")));
+		logoutImg.setVerticalAlignment(SwingConstants.TOP);
+		logoutImg.setBounds(320, 553, 50, 50);
+		frame.getContentPane().add(logoutImg);
+		
 		JButton btnRegistra = new JButton("Registrar");
-		btnRegistra.setBackground(new Color(204, 255, 204));
+		btnRegistra.setBackground(new Color(204, 255, 153));
 		btnRegistra.setForeground(Color.BLACK);
 		btnRegistra.setBounds(357, 519, 89, 23);
 		frame.getContentPane().add(btnRegistra);
@@ -63,7 +93,21 @@ public class LoginInterface implements GUIFactory {
 		textFieldUsername.setColumns(10);
 		
 		JButton btnLogin = new JButton("Login");
-		btnLogin.setBackground(new Color(255, 255, 153));
+		btnLogin.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					Application.setUser( User.login(textFieldUsername.getText(), passwordField.getPassword()));
+				}catch(LoginErrorException exc) {
+					JOptionPane optionPane = new JOptionPane(exc.getMessage(), JOptionPane.ERROR_MESSAGE);    
+					JDialog dialog = optionPane.createDialog("ERRO");
+					dialog.setAlwaysOnTop(true);
+					dialog.setVisible(true);
+					
+				}
+			}
+		});
+		btnLogin.setBackground(new Color(204, 255, 153));
 		btnLogin.setBounds(357, 485, 89, 23);
 		frame.getContentPane().add(btnLogin);
 		
@@ -92,7 +136,16 @@ public class LoginInterface implements GUIFactory {
 		ImgLogo.setIcon(new ImageIcon(LoginInterface.class.getResource("/reunioImages/logo.png")));
 		ImgLogo.setBounds(0, 0, 1300, 679);
 		frame.getContentPane().add(ImgLogo);
-		btnRegistra.addActionListener(e -> { Application.setRegister(true); frame.dispose(); ;Application.main(null);});
+		
+		JLabel lblUsurio = new JLabel("Usu\u00E1rio");
+		lblUsurio.setBounds(221, 417, 46, 14);
+		frame.getContentPane().add(lblUsurio);
+		
+		JLabel lblSenha = new JLabel("Senha");
+		lblSenha.setBounds(221, 448, 46, 14);
+		frame.getContentPane().add(lblSenha);
+		btnRegistra.addActionListener(e -> { Application.setRegister(true);Application.main(null);});
+		frame.setUndecorated(true);
 	}
 
 	@Override
@@ -102,7 +155,9 @@ public class LoginInterface implements GUIFactory {
 				try {
 					LoginInterface window = new LoginInterface();
 					window.frame.setVisible(true);
+					// faz a tela estar maximizada
 					window.frame.setExtendedState(window.frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

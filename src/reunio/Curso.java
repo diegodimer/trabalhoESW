@@ -9,6 +9,10 @@ public class Curso {
 		this.ID = ID;
 	}
 	
+	public Curso() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public String getNome() {
 		return nome;
 	}

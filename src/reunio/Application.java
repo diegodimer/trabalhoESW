@@ -1,5 +1,12 @@
 package reunio;
 
+import java.awt.Color;
+
+import javax.swing.JFrame;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import reunioGUI.GUIFactory;
 import reunioGUI.LoginInterface;
 import reunioGUI.RegisterInterface;
@@ -16,6 +23,13 @@ public class Application {
 	private static boolean register = false;
 	
 	public static void main(String[] args) {
+		
+//		UIDefaults uiDefaults = UIManager.getDefaults();
+//		uiDefaults.put("activeCaption", new javax.swing.plaf.ColorUIResource(Color.pink));
+//		uiDefaults.put("activeCaptionText", new javax.swing.plaf.ColorUIResource(Color.pink));
+//		JFrame.setDefaultLookAndFeelDecorated(true);
+            // Set cross-platform Java L&F (also called "Metal")
+    		
 //		DataPersistenceInterface data = new Database();
 		if (user == null)
 			if(!register)

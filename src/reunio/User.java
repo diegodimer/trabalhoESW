@@ -2,6 +2,9 @@ package reunio;
 
 import java.util.List;
 
+import reunioExceptions.LoginErrorException;
+import reunioExceptions.RegisterErrorException;
+
 public abstract class User {
 	private String nomeCompleto;
 	private String userName;
@@ -11,6 +14,14 @@ public abstract class User {
 	private int cursoID;
 	private List<Invite> notifications;
 
+	public User(String nomeCompleto, String userName, String numeroMatricula, String email, String telefone, int cursoID) {
+		this.nomeCompleto = nomeCompleto;
+		this.userName = userName;
+		this.numeroMatricula = numeroMatricula;
+		this.email = email;
+		this.telefone = telefone;
+		this.cursoID = cursoID;
+	}
 	public String getNomeCompleto() {
 		return nomeCompleto;
 	}
@@ -77,4 +88,15 @@ public abstract class User {
 		List<Meeting> list = db.listUserMeetings(this);
 		return list;
 	}
+	public static User login(String text, char[] password) throws LoginErrorException {
+		// método que procura na db um usuário com login e senha informados. Se encontra mas senha errada: joga exceção com mensagem de senha
+		// se não encontra: joga exceção com mensagem de usuario nao encontrado
+		throw new LoginErrorException("Erro");
+	}
+	public static void registrar(User usuario, char[] password) throws RegisterErrorException{
+		// levantar exceções caso de errado
+		System.out.println(usuario.getNomeCompleto());
+		
+	}
+	
 }
