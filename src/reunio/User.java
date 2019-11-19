@@ -1,5 +1,6 @@
 package reunio;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import reunioExceptions.LoginErrorException;
@@ -21,6 +22,10 @@ public abstract class User {
 		this.email = email;
 		this.telefone = telefone;
 		this.cursoID = cursoID;
+		this.notifications = new ArrayList<Invite>();
+		for(int i=0; i<50;i++) {
+			this.notifications.add(new Group("a"));	
+		}
 	}
 	public String getNomeCompleto() {
 		return nomeCompleto;
@@ -91,11 +96,12 @@ public abstract class User {
 	public static User login(String text, char[] password) throws LoginErrorException {
 		// método que procura na db um usuário com login e senha informados. Se encontra mas senha errada: joga exceção com mensagem de senha
 		// se não encontra: joga exceção com mensagem de usuario nao encontrado
-		throw new LoginErrorException("Erro");
+		//throw new LoginErrorException("Erro");
+		return new Teacher("Diego Dimer", "diego", "287690", "diego.dimer@ufrgs.br", "995733931", 5);
 	}
 	public static void registrar(User usuario, char[] password) throws RegisterErrorException{
 		// levantar exceções caso de errado
-		System.out.println(usuario.getNomeCompleto());
+		throw new RegisterErrorException("Under development");
 		
 	}
 	

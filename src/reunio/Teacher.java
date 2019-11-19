@@ -5,6 +5,12 @@ import reunioExceptions.InvalidInviteException;
 
 public class Teacher extends User {
 	
+	public Teacher(String nomeCompleto, String userName, String numeroMatricula, String email, String telefone,
+			int cursoID) {
+		super(nomeCompleto, userName, numeroMatricula, email, telefone, cursoID);
+		// TODO Auto-generated constructor stub
+	}
+
 	// essa função vai receber um group ou uma meeting, aqui dentro eu vou montar o objeto invite
 	// e mandar ele pra ser adicionado na DB. Também vai receber um User pq pode ser estudante ou aluno.
 	public void inviteUser(Invite invite, User user) throws InvalidInviteException { 

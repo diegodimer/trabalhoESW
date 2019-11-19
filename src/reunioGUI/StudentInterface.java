@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import java.awt.Color;
 
 public class StudentInterface implements GUIFactory{
 	private JFrame frame;
@@ -21,11 +22,12 @@ public class StudentInterface implements GUIFactory{
 	 */
 	private void initialize() {
 		frame = new JFrame();
+		frame.getContentPane().setBackground(Color.WHITE);
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JLabel lblLogin = new JLabel("STUDENT");
-		frame.getContentPane().add(lblLogin, BorderLayout.WEST);
+//		frame.setUndecorated(true);
+		frame.getContentPane().setLayout(null);
 	}
 
 	@Override
@@ -35,6 +37,8 @@ public class StudentInterface implements GUIFactory{
 				try {
 					StudentInterface window = new StudentInterface();
 					window.frame.setVisible(true);
+					// faz a tela estar maximizada
+					window.frame.setExtendedState(window.frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

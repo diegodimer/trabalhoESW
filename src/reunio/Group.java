@@ -7,7 +7,6 @@ public class Group extends Invite{
 	private User owner;
 	private List<User> members;
 	
-	
 	Group(String nome){
 		this.nome = nome;
 	}
@@ -37,6 +36,10 @@ public class Group extends Invite{
 	}
 	public void setMembers(List<User> members) {
 		this.members = members;
+	}
+	@Override
+	public String getTypeName() {
+		return "Participar do grupo " + this.nome;
 	}
 	
 	

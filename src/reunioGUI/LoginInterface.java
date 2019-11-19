@@ -1,34 +1,24 @@
 package reunioGUI;
 
-import java.awt.Dimension;
+import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
-import reunio.Application;
-import reunio.Student;
-import reunio.User;
-import reunioExceptions.LoginErrorException;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-
-import javax.swing.JPanel;
-import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
-import java.awt.Color;
-import java.awt.Label;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.Font;
+
+import reunio.Application;
+import reunio.User;
+import reunioExceptions.LoginErrorException;
 
 public class LoginInterface implements GUIFactory {
 
@@ -72,7 +62,7 @@ public class LoginInterface implements GUIFactory {
 		lblSair.setFont(new Font("Tahoma", Font.PLAIN, 40));
 		lblSair.setBounds(380, 553, 66, 49);
 		frame.getContentPane().add(lblSair);
-		logoutImg.setIcon(new ImageIcon(LoginInterface.class.getResource("/reunioImages/logout.png")));
+		logoutImg.setIcon(new ImageIcon(LoginInterface.class.getResource("/reunioImages/close.png")));
 		logoutImg.setVerticalAlignment(SwingConstants.TOP);
 		logoutImg.setBounds(320, 553, 50, 50);
 		frame.getContentPane().add(logoutImg);
@@ -98,6 +88,8 @@ public class LoginInterface implements GUIFactory {
 			public void mouseClicked(MouseEvent e) {
 				try {
 					Application.setUser( User.login(textFieldUsername.getText(), passwordField.getPassword()));
+					frame.dispose();
+					Application.main(null);
 				}catch(LoginErrorException exc) {
 					JOptionPane optionPane = new JOptionPane(exc.getMessage(), JOptionPane.ERROR_MESSAGE);    
 					JDialog dialog = optionPane.createDialog("ERRO");

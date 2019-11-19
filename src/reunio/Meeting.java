@@ -17,6 +17,11 @@ public class Meeting extends Invite {
 		this.local = local;
 		this.participantes = participantes;
 	}
+
+	@Override
+	public String getTypeName() {
+		return "Meeting";
+	}
 	
 	
 	

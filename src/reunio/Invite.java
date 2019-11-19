@@ -6,7 +6,9 @@ public abstract class Invite {
 	private InviteType type;
 	private int ID;
 	
-	
+	Invite(){
+		
+	}
 	public User getFrom() {
 		return from;
 	}
@@ -36,5 +38,6 @@ public abstract class Invite {
 	public void setID(int iD) {
 		ID = iD;
 	}
+	public abstract String getTypeName();
 	
 }
