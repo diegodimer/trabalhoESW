@@ -1,13 +1,13 @@
 package reunioGUI;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import java.awt.Color;
 
-public class StudentInterface implements GUIFactory{
+import reunio.Application;
+
+public class StudentInterface extends UserInterface implements GUIFactory{
 	private JFrame frame;
 
 	/**
@@ -21,13 +21,18 @@ public class StudentInterface implements GUIFactory{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		super.setUsuario(Application.getUser());
+		super.setNotificacoes(this.getUsuario().getNotifications());
+		
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Color.WHITE);
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(0, 0, 1980, 720);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				
+		notificationsHandler(frame);
+		exitButtonsHelper(frame);
 		
-//		frame.setUndecorated(true);
-		frame.getContentPane().setLayout(null);
+		frame.setUndecorated(true);
 	}
 
 	@Override

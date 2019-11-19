@@ -23,7 +23,7 @@ public abstract class User {
 		this.telefone = telefone;
 		this.cursoID = cursoID;
 		this.notifications = new ArrayList<Invite>();
-		for(int i=0; i<50;i++) {
+		for(int i=0; i<5;i++) {
 			this.notifications.add(new Group("a"));	
 		}
 	}
