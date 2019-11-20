@@ -21,8 +21,8 @@ import reunio.User;
 
 public class UserInterface {
 
-	private List<Invite> notificacoes;
-	private User usuario;
+	protected List<Invite> notificacoes;
+	protected User usuario;
 	private JFrame frame;
 	private JLabel imgRedDot;
 	

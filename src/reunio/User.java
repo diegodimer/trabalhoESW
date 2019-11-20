@@ -88,7 +88,7 @@ public abstract class User {
 		db.deleteInvite(invite);
 	}
 	
-	public List<Meeting> listMyPastMeetings(){
+	public List<Meeting> listMyMeetings(){
 		Database db = new Database();
 		List<Meeting> list = db.listUserMeetings(this);
 		return list;

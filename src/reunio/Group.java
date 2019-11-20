@@ -7,7 +7,7 @@ public class Group extends Invite{
 	private User owner;
 	private List<User> members;
 	
-	Group(String nome){
+	public Group(String nome){
 		this.nome = nome;
 	}
 	Group(User owner){
@@ -42,5 +42,9 @@ public class Group extends Invite{
 		return "Participar do grupo " + this.nome;
 	}
 	
+	public String toString() {
+		return nome;
+		
+	}
 	
 }

@@ -1,5 +1,7 @@
 package reunio;
 
+import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -23,7 +25,13 @@ public class Application {
 	public static void main(String[] args) {
 		
 
-    		
+//    	Database d = new Database();
+//    	Meeting meet = new Meeting("2019-11-19 20:52:20", "2020-11-19 20:52:20", "falar mal do eduardo", "casa do diego", null);
+//    	meet.setID(1);
+//    	User usr = new Teacher("diego dimer", "diego", "287690", "dieg.dimer@ufrgs.br", "51885733931", 1);
+//    	d.createMeeting(meet);
+//    	d.createUser(usr, "123");
+//    	d.addUserToMeeting(usr, meet);
 //		DataPersistenceInterface data = new Database();
 		if (user == null)
 			if(!register)

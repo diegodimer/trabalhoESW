@@ -226,7 +226,7 @@ public class Database implements DataPersistenceInterface {
 	}
 
 	@Override
-	public void createUser(User user) {
+	public void createUser(User user, String senha) {
 		// TODO Auto-generated method stub
 		PreparedStatement pstmt;
 		
@@ -238,7 +238,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt = Database.conec.prepareStatement(sql);
 			pstmt.setString(1, user.getNomeCompleto());
 			pstmt.setString(2, user.getUserName());
-			pstmt.setString(3, user.getSenha());
+			pstmt.setString(3, senha);
 			pstmt.setString(4, user.getNumeroMatricula());
 			pstmt.setString(5, user.getEmail());
 			pstmt.setString(6, user.getTelefone());
@@ -589,6 +589,8 @@ public class Database implements DataPersistenceInterface {
 		PreparedStatement pstmt;
 		ResultSet rs;
 		List<Meeting> list = new ArrayList<Meeting>();
+		list.add( new Meeting("2019-11-19 20:52:20", "2020-11-19 20:52:20", "falar mal do eduardo", "casa do diego", null));
+		list.add( new Meeting("2019-11-19 20:52:20", "2020-11-19 20:52:20", "falar 2mal do eduardo", "casa do 2diego", null));
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		
 		try {

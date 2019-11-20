@@ -66,5 +66,7 @@ public interface DataPersistenceInterface {
 	
 	// função para remover um usuario de uma reunião
 	public void removeUserFromMeeting(User user, Meeting meeting);
+	void createUser(User user, String senha);
+	boolean isProf(User user);
 	
 }
