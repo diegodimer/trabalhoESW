@@ -36,9 +36,11 @@ public class Teacher extends User {
 	}
 	
 	//metodo de marcar reunião
-	public void bookMeeting(Meeting meeting) {
+	public Meeting bookMeeting(Meeting meeting) {
+		// adiciona a reunião na DB e retorna ela (precisa preencher o ID!)
 		Database db = new Database();
 		db.createMeeting(meeting);
+		return meeting;
 	}
 
 }

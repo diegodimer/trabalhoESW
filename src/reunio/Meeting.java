@@ -10,6 +10,12 @@ public class Meeting extends Invite {
 	private String local;
 	private List<User> participantes;
 	
+	public Meeting(String inicio, String fim, String assunto, String local){
+		this.inicio = inicio;
+		this.fim = fim;
+		this.assunto = assunto;
+		this.local = local;
+	}
 	Meeting(String inicio, String fim, String assunto, String local, List<User> participantes){
 		this.inicio = inicio;
 		this.fim = fim;

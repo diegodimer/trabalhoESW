@@ -857,5 +857,10 @@ public class Database implements DataPersistenceInterface {
 		return type;
 	}
 
+	public User findUserByUsername(String nome) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

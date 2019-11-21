@@ -105,4 +105,15 @@ public abstract class User {
 		
 	}
 	
+	public List<Group> listMyGroups(){
+		Database db = new Database();
+		return db.listUserGroups(this);
+	}
+	
+	public static User findUser(String nome) {
+		// criar exceção e levantar ela caso dê erros
+		Database db = new Database();
+		return db.findUserByUsername(nome);
+	}
+	
 }
