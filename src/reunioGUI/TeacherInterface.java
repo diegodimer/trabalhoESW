@@ -39,17 +39,9 @@ import reunio.Teacher;
 import reunio.User;
 
 public class TeacherInterface extends UserInterface implements GUIFactory{
-	private JFrame frame;
-	private JTable table;
+	private JFrame frame;	
 	private Teacher _usuario;
-	@SuppressWarnings("serial")
-	private DefaultTableModel modelo = new DefaultTableModel() {
-
-	    @Override
-	    public boolean isCellEditable(int row, int column) {
-	       return false; //torna todas as células da tabela de reuniões não editáveis
-	    }
-	};
+	
 	/**
 	 * Create the application.
 	 */
@@ -61,10 +53,10 @@ public class TeacherInterface extends UserInterface implements GUIFactory{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		super.setUsuario(Application.getUser());
-		super.setNotificacoes(this.getUsuario().getNotifications());
-
-		_usuario = (Teacher) super.getUsuario();
+		
+		_usuario = (Teacher) Application.getUser();
+		super.setUsuario(_usuario);
+		super.setNotificacoes(_usuario.getNotifications());
 
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Color.WHITE);
@@ -75,26 +67,7 @@ public class TeacherInterface extends UserInterface implements GUIFactory{
 		lblUsername.setFont(new Font("Monospaced", Font.PLAIN, 41));
 		lblUsername.setBounds(350, 38, 764, 82);
 		
-		DefaultListModel<Group> groupList = new DefaultListModel<Group>();
-		System.out.println(usuario.listMyGroups());
-		for(Group a: usuario.listMyGroups()) {
-			groupList.addElement(a);
-		}
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(66, 221, 419, 93);
-		frame.getContentPane().add(scrollPane);
-		//
-		
-		JPanel panelGroups = new JPanel();
-		scrollPane.setViewportView(panelGroups);
-		panelGroups.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
-		panelGroups.setBackground(Color.WHITE);
-		
-		
-		JList groupsJList = new JList(groupList);
-		groupsJList.setSelectedIndex(0);
-		panelGroups.add(groupsJList);
+		myGroupsBox(this.frame);
 		
 		frame.getContentPane().add(lblUsername);
 		
@@ -140,29 +113,7 @@ public class TeacherInterface extends UserInterface implements GUIFactory{
 		btnEscreverRelatrio.setBounds(294, 370, 146, 23);
 		frame.getContentPane().add(btnEscreverRelatrio);
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(66, 404, 887, 227);
-		frame.getContentPane().add(scrollPane_1);
-		
-		JPanel panel = new JPanel();
-		scrollPane_1.setViewportView(panel);
-		panel.setBackground(Color.WHITE);
-		panel.setBorder(new LineBorder(Color.DARK_GRAY, 3, true));
-		panel.setLayout(new GridLayout(0, 1, 0, 0));
-		
-		table = new JTable(modelo);
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		panel.add(table);
-		modelo.addColumn("início");
-		modelo.addColumn("fim");
-		modelo.addColumn("assunto");
-		modelo.addColumn("local");
-        pesquisar(modelo);
-		
-		JLabel labelReunioes = new JLabel("Minhas Reuni\u00F5es");
-		labelReunioes.setFont(new Font("Roboto Th", Font.PLAIN, 24));
-		labelReunioes.setBounds(66, 357, 266, 39);
-		frame.getContentPane().add(labelReunioes);
+		myMeetingsBox(this.frame);
 		
 		JLabel lblAesParaGrupos = new JLabel("A\u00E7\u00F5es para Grupos");
 		lblAesParaGrupos.setFont(new Font("Roboto Th", Font.PLAIN, 15));
@@ -182,8 +133,12 @@ public class TeacherInterface extends UserInterface implements GUIFactory{
 		exitButtonsHelper(frame);
 		
 		frame.setUndecorated(true);
-		
+
 	}
+
+
+
+
 
 	private void marcarReuniao() {
 		List<User> listaParticipantes = new ArrayList<>();
@@ -229,22 +184,23 @@ public class TeacherInterface extends UserInterface implements GUIFactory{
 		}
 		myPanel.add(local);
 		
-		
+
 		myPanel.setLayout(new BoxLayout(myPanel, 1));
 		
 		int result = JOptionPane.showConfirmDialog(null, myPanel, "Digite os dados: ", JOptionPane.OK_CANCEL_OPTION);
 		
 		if (result == JOptionPane.OK_OPTION) {
 			// cria a reunião na db, chama a tela pra adicionar participantes
-			String _inicio = datePicker.getJFormattedTextField().getText() + timeEditor.getFormat().format(inicio.getValue());
-			String _fim = datePicker.getJFormattedTextField().getText() + timeEditorFim.getFormat().format(fim.getValue());
+			String _inicio = datePicker.getJFormattedTextField().getText() + " "+ timeEditor.getFormat().format(inicio.getValue());
+			String _fim = datePicker.getJFormattedTextField().getText() +" "+ timeEditorFim.getFormat().format(fim.getValue());
 			String _assunto = assunto.getText();
 			String _local = local.getSelectedItem();
 			
+			int _grupo = groupList.get(groupsJList.getSelectedIndex()).getID();
 			// pega a capacidade da sala pra não deixar por mais participante do que ela
 			int capacidade = Application.getCapacity(_local);
 			
-			Meeting reuniao = new Meeting(_inicio, _fim,_assunto,_local);
+			Meeting reuniao = new Meeting(_grupo, _inicio, _fim,_assunto,_local);
 			_usuario.bookMeeting(reuniao);
 			
 			// mostra janela com botão de adicionar novos participantes
@@ -253,9 +209,16 @@ public class TeacherInterface extends UserInterface implements GUIFactory{
 			adicionarParticipantes.add(participantes);
 			participantes.addActionListener(e -> { 
 				try{
+					try {
 					User convidado = adicionaParticipante(); 
 					_usuario.inviteUser(reuniao, convidado);
 					listaParticipantes.add(convidado);
+					} catch(Exception exc) {
+						JOptionPane optionPane = new JOptionPane(exc.getMessage(), JOptionPane.ERROR_MESSAGE);    
+						JDialog dialog = optionPane.createDialog("ERRO");
+						dialog.setAlwaysOnTop(true);
+						dialog.setVisible(true);
+					}
 					if(listaParticipantes.size() >= capacidade) {
 						participantes.setEnabled(false);
 						adicionarParticipantes.invalidate();
@@ -279,21 +242,12 @@ public class TeacherInterface extends UserInterface implements GUIFactory{
 		myPanel.add(new JLabel("Usuário do participante"));
 		JTextField part = new JTextField(30);
 		myPanel.add(part);
-		return User.findUser(part.getText());
+		int result = JOptionPane.showConfirmDialog(null, myPanel, "Digite os dados: ", JOptionPane.OK_CANCEL_OPTION);
+		if(result == JOptionPane.OK_OPTION)
+			return User.findUser(part.getText());
+		else return null;
 	}
 
-	public void pesquisar(DefaultTableModel modelo) {
-		/* Essa função monta a tabela com as reuniões do usuário */
-        modelo.setNumRows(0);
-        System.out.println(usuario.listMyMeetings());
-        for (Meeting c : usuario.listMyMeetings()) {
-            modelo.addRow(new Object[]{c.getInicio(), c.getFim(), c.getAssunto(), c.getLocal()});
-        }
-        frame.invalidate();
-		frame.validate();
-		frame.repaint();
-    }
-	
 	
 	
 	@Override

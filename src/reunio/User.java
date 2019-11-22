@@ -1,6 +1,5 @@
 package reunio;
 
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +7,7 @@ import reunioExceptions.LoginErrorException;
 import reunioExceptions.RegisterErrorException;
 
 public abstract class User {
+	private int ID;
 	private String nomeCompleto;
 	private String userName;
 	private String numeroMatricula;
@@ -16,7 +16,8 @@ public abstract class User {
 	private int cursoID;
 	private List<Invite> notifications;
 
-	public User(String nomeCompleto, String userName, String numeroMatricula, String email, String telefone, int cursoID) {
+	public User(int ID, String nomeCompleto, String userName, String numeroMatricula, String email, String telefone, int cursoID) {
+		this.ID = ID;
 		this.nomeCompleto = nomeCompleto;
 		this.userName = userName;
 		this.numeroMatricula = numeroMatricula;
@@ -100,12 +101,14 @@ public abstract class User {
 		//throw new LoginErrorException("Erro");
 		try {
 			Database db = new Database();
-			db.authenticateUser(text, String.valueOf(password));
+			User usuario = db.authenticateUser(text, String.valueOf(password));
+			return usuario;
 		}
 		catch(Exception e) {
-		throw new LoginErrorException("Erro no login");
+			throw e;
 		}
-		return new Teacher("Diego Dimer", "diego", "287690", "diego.dimer@ufrgs.br", "995733931", 5);
+		
+		
 	}
 	
 	public static void registrar(User usuario, char[] password) throws RegisterErrorException{
@@ -115,7 +118,7 @@ public abstract class User {
 			db.createUser(usuario, String.valueOf(password));
 		}
 		catch(Exception e) {
-		throw new RegisterErrorException("Under development");
+			throw new RegisterErrorException(e.getMessage());
 		}
 		
 	}
@@ -126,9 +129,8 @@ public abstract class User {
 	}
 	
 	public static User findUser(String nome) {
-		// criar exceção e levantar ela caso dê erros
 		Database db = new Database();
-		return db.findUserByUsername(nome);
+		return db.findUserByUserName(nome);
 	}
 	
 }

@@ -2,10 +2,14 @@ package reunioGUI;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import reunio.Application;
+import reunio.Student;
+import reunio.User;
 
 public class StudentInterface extends UserInterface implements GUIFactory{
 	private JFrame frame;
@@ -21,16 +25,25 @@ public class StudentInterface extends UserInterface implements GUIFactory{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		super.setUsuario(Application.getUser());
-		super.setNotificacoes(this.getUsuario().getNotifications());
+		Student _usuario = (Student) Application.getUser();
+		
+		super.setUsuario(_usuario);
+		super.setNotificacoes(_usuario.getNotifications());
 		
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Color.WHITE);
 		frame.setBounds(0, 0, 1980, 720);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				
+		
 		notificationsHandler(frame);
 		exitButtonsHelper(frame);
+		myGroupsBox(this.frame);
+		myMeetingsBox(this.frame);
+		
+		JLabel lblUsername = new JLabel("Bem-vindo, " + _usuario .getUserName());
+		lblUsername.setFont(new Font("Monospaced", Font.PLAIN, 41));
+		lblUsername.setBounds(350, 38, 764, 82);
+		frame.add(lblUsername);
 		
 		frame.setUndecorated(true);
 	}

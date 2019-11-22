@@ -9,8 +9,10 @@ public class Meeting extends Invite {
 	private String assunto;
 	private String local;
 	private List<User> participantes;
+	private int grupo;
 	
-	public Meeting(String inicio, String fim, String assunto, String local){
+	public Meeting(int id, String inicio, String fim, String assunto, String local){
+		this.setGrupo(id);
 		this.inicio = inicio;
 		this.fim = fim;
 		this.assunto = assunto;
@@ -67,6 +69,12 @@ public class Meeting extends Invite {
 
 	public void setParticipantes(List<User> participantes) {
 		this.participantes = participantes;
+	}
+	public int getGrupo() {
+		return grupo;
+	}
+	public void setGrupo(int grupo) {
+		this.grupo = grupo;
 	}
 	
 	

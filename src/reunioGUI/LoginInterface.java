@@ -90,7 +90,7 @@ public class LoginInterface implements GUIFactory {
 					Application.setUser( User.login(textFieldUsername.getText(), passwordField.getPassword()));
 					frame.dispose();
 					Application.main(null);
-				}catch(LoginErrorException exc) {
+				}catch(Exception exc) {
 					JOptionPane optionPane = new JOptionPane(exc.getMessage(), JOptionPane.ERROR_MESSAGE);    
 					JDialog dialog = optionPane.createDialog("ERRO");
 					dialog.setAlwaysOnTop(true);

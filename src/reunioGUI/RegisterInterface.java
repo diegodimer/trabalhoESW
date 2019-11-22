@@ -143,9 +143,14 @@ public class RegisterInterface implements GUIFactory{
 						cursoID = p.getID();
 					}
 				}
-				User usuario = new Student(fieldNomeCompleto.getText(), fieldUsuario.getText(), fieldMatricula.getText(), fieldEmail.getText(), fieldTelefone.getText(), cursoID);
+				User usuario = new Student(0, fieldNomeCompleto.getText(), fieldUsuario.getText(), fieldMatricula.getText(), fieldEmail.getText(), fieldTelefone.getText(), cursoID);
 				try {
 					User.registrar(usuario, fieldSenha.getPassword());
+					JOptionPane.showMessageDialog(frame,
+						    "Conta criada com sucesso",
+						    "Concluído",
+						    JOptionPane.PLAIN_MESSAGE);
+					frame.dispose();
 				} catch (RegisterErrorException e1) {
 					// TODO Auto-generated catch block
 					JOptionPane optionPane = new JOptionPane(e1.getMessage(), JOptionPane.ERROR_MESSAGE);    

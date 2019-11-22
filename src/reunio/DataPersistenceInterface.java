@@ -2,18 +2,20 @@ package reunio;
 
 import java.util.List;
 
+import reunioExceptions.LoginErrorException;
+
 public interface DataPersistenceInterface {
     
     // funções CRUD para grupos
     public List<Group> findGroupByName (String nome); //
-    public List<Group> findGroupByOwnerUserName (String user); //
-    public List<Group> findGroupByID (int id); //
+    public Group findGroupByOwnerUserName (String user); //
+    public Group findGroupByID (int id); //
     public void createGroup (Group group);
     public void updateGroup (Group group);
     public void deleteGroup (Group group);
     
     // funções CRUD para Usuários
-    public List<User> findUserByUserName (String user);
+    public User findUserByUserName (String user);
     public void createUser (User user, String password);
     public void updateUser (User user, String password);
     public void deleteUser (User user);
@@ -39,7 +41,7 @@ public interface DataPersistenceInterface {
     public void deleteNote (Note note);
     
     // função que autentica um usuário
-    public User authenticateUser(String name, String password);
+    public User authenticateUser(String name, String password) throws LoginErrorException;
     
     // função de procurar os cursos
     public List<Curso> getCursos();
