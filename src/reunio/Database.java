@@ -5,7 +5,12 @@ import java.sql.*;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import reunioExceptions.LoginErrorException;
+
 import java.text.*;
+
+
 
 public class Database implements DataPersistenceInterface {
     
@@ -43,7 +48,8 @@ public class Database implements DataPersistenceInterface {
         Statement statement;
         try {
             statement = Database.conec.createStatement();
-            statement.execute("CREATE TABLE IF NOT EXISTS USER( ID INTEGER PRIMARY KEY, NOME TEXT, USER TEXT UNIQUE, SENHA TEXT, MATRICULA TEXT, EMAIL TEXT, TELEFONE TEXT, CURSO INTEGER, PROF BOOLEAN )");
+            statement.execute("CREATE TABLE IF NOT EXISTS CURSOS(  ID INTEGER PRIMARY KEY, NOME TEXT)");
+            statement.execute("CREATE TABLE IF NOT EXISTS USER( ID INTEGER PRIMARY KEY, NOME TEXT, USER TEXT UNIQUE, SENHA TEXT, MATRICULA TEXT, EMAIL TEXT, TELEFONE TEXT, CURSO INTEGER REFERENCES CURSOS, PROF BOOLEAN )");
             statement.execute("CREATE TABLE IF NOT EXISTS REUNIAO( ID INTEGER PRIMARY KEY, DATA DATE, LOCAL TEXT, FINALDATA DATE, ASSUNTO TEXT)");
             statement.execute("CREATE TABLE IF NOT EXISTS NOTA( ID INTEGER PRIMARY KEY, USER_ID INTEGER REFERENCES USER, REUNIAO_ID INTEGER REFERENCES REUNIAO, NOTA TEXT)");
             statement.execute("CREATE TABLE IF NOT EXISTS RELATORIO( ID INTEGER PRIMARY KEY, USER_ID INTEGER REFERENCES USER, REUNIAO_ID INTEGER REFERENCES REUNIAO, RELATORIO TEXT)");
@@ -51,7 +57,6 @@ public class Database implements DataPersistenceInterface {
             
             statement.execute("CREATE TABLE IF NOT EXISTS GRUPO_MEMBRO( USER_ID INTEGER REFERENCES USER, GRUPO_ID INTEGER REFERENCES GRUPO, ATIVO BOOLEAN)");
             statement.execute("CREATE TABLE IF NOT EXISTS REUNIAO_MEMBRO( USER_ID INTEGER REFERENCES USER, REUNIAO_ID INTEGER REFERENCES REUNIAO)");
-
             statement.execute("CREATE TABLE IF NOT EXISTS INVITE( USER_FROM INTEGER REFERENCES USER, USER_TO INTEGER REFERENCES USER, TYPE INTEGER, INVITE INTEGER)");
             
             
@@ -560,53 +565,90 @@ public class Database implements DataPersistenceInterface {
     }
 
     @Override
-    public boolean authenticateUser(User user, String password) {
+    public User authenticateUser(String name, String password) {
         // TODO Auto-generated method stub
         PreparedStatement pstmt;
         ResultSet rs;
         boolean authenticated = false;
         
+        Student student = null;
         try {
-            String sql = "SELECT SENHA "
-                    + "FROM USER WHERE USER = ? "
-                    + "AND SENHA = ?";
+        	String sql = "SELECT NOME, USER, SENHA, MATRICULA, EMAIL, TELEFONE, CURSO, PROF "
+                    + "FROM USER WHERE USER = ? AND SENHA = ?";
 
             pstmt = Database.conec.prepareStatement(sql);
-            pstmt.setString(1, user.getUserName());
+            pstmt.setString(1, name);
             pstmt.setString(2, password);
             rs = pstmt.executeQuery();
             
+           
+            
             while(rs.next()) {
+                      
+                String nomeCompleto = rs.getString("NOME");
                 String userName = rs.getString("USER");
                 String senha = rs.getString("SENHA");
+                String matricula = rs.getString("MATRICULA");
+                String email = rs.getString("EMAIL");
+                String telefone = rs.getString("TELEFONE");
+                int curso = rs.getInt("CURSO");
+                boolean prof = rs.getBoolean("PROF");
                 
-                System.out.println("AUTHENTICATED USER");
+                System.out.println("USER");
+                System.out.println("nomeCompleto: " + nomeCompleto);
                 System.out.println("userName: " + userName);
                 System.out.println("senha: " + senha);
+                System.out.println("matricula: " + matricula);
+                System.out.println("email: " + email);
+                System.out.println("telefone: " + telefone);
+                System.out.println("curso: " + curso);
+                System.out.println("prof: " + prof);
                 System.out.println();
-
+                
+                student = new Student(nomeCompleto, userName, matricula, email, telefone, curso);
                 authenticated = true;
+                
             }
             
             rs.close();
             pstmt.close();
-        } catch (SQLException e) {
+            
+            if(student == null) {
+            	throw new LoginErrorException(" Usuario ou senha invalidos!");
+            }
+            
+           
+            
+        } catch (SQLException | LoginErrorException e) {
             System.out.println(e.getMessage());
         }
+        return student;
         
-        return authenticated;
     }
 
     @Override
     public List<Curso> getCursos() {
         List<Curso> lista = new ArrayList<Curso>();
-        
+        /*
         for (int i=0; i<5;i++) {
             Curso c = new Curso();
             c.setNome("a".concat(String.valueOf(i)));
             lista.add(c);    
         }
-        
+        */
+        try {
+        	PreparedStatement st = conec.prepareStatement("SELECT * FROM CURSOS");
+			
+			ResultSet rs = st.executeQuery();
+			while (rs.next())
+			{
+				lista.add(new Curso(rs.getString(2),rs.getInt(1)));
+			}
+			rs.close();
+			st.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         
         return lista;
     }

@@ -39,7 +39,7 @@ public interface DataPersistenceInterface {
     public void deleteNote (Note note);
     
     // função que autentica um usuário
-    public boolean authenticateUser(User user, String password);
+    public User authenticateUser(String name, String password);
     
     // função de procurar os cursos
     public List<Curso> getCursos();

@@ -1,5 +1,6 @@
 package reunio;
 
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,17 +98,31 @@ public abstract class User {
 		// método que procura na db um usuário com login e senha informados. Se encontra mas senha errada: joga exceção com mensagem de senha
 		// se não encontra: joga exceção com mensagem de usuario nao encontrado
 		//throw new LoginErrorException("Erro");
+		try {
+			Database db = new Database();
+			db.authenticateUser(text, String.valueOf(password));
+		}
+		catch(Exception e) {
+		throw new LoginErrorException("Erro no login");
+		}
 		return new Teacher("Diego Dimer", "diego", "287690", "diego.dimer@ufrgs.br", "995733931", 5);
 	}
+	
 	public static void registrar(User usuario, char[] password) throws RegisterErrorException{
 		// levantar exceções caso de errado
+		try {
+			Database db = new Database();
+			db.createUser(usuario, String.valueOf(password));
+		}
+		catch(Exception e) {
 		throw new RegisterErrorException("Under development");
+		}
 		
 	}
 	
 	public List<Group> listMyGroups(){
 		Database db = new Database();
-		return db.listUserGroups(this);
+		return db.listUserGroups(this,true);
 	}
 	
 	public static User findUser(String nome) {
