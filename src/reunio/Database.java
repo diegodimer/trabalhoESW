@@ -621,6 +621,7 @@ public class Database implements DataPersistenceInterface {
             
         } catch (SQLException | LoginErrorException e) {
             System.out.println(e.getMessage());
+           
         }
         return student;
         
