@@ -81,11 +81,9 @@ public abstract class User {
 		Database db = new Database();
 		// eu posso passar o invite aqui pq vou usar o ID pra adicionar ao grupo!
 		if (invite instanceof Group) {
-			System.out.println("grupo");
 			invite.setType(InviteType.GROUP);
 			db.addUserToGroup(this, invite);
 		} else if (invite instanceof Meeting) {
-			System.out.println("reuniao");
 			invite.setType(InviteType.MEETING);
 			db.addUserToMeeting(this, invite); 
 		}

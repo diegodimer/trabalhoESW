@@ -201,20 +201,29 @@ public class Database implements DataPersistenceInterface {
 
 	@Override
 	public void createGroup(Group group) {
-		// TODO Auto-generated method stub
 		PreparedStatement pstmt;
 
 		try {
-			String sql = "INSERT INTO " + "GRUPO (ID, OWNER, NOME, ATIVO) "
-					+ "VALUES(?, (SELECT ID FROM USER WHERE USER = ?), " + "?, ?)";
+			String sql = "INSERT INTO GRUPO (OWNER, NOME, ATIVO) "
+					+ "VALUES(?, ?, ?)";
 
 			pstmt = conec.prepareStatement(sql);
-			pstmt.setInt(1, group.getID());
-			pstmt.setString(2, group.getOwner().getUserName());
-			pstmt.setString(3, group.getNome());
-			pstmt.setBoolean(4, isGroupActive(group));
+			pstmt.setInt(1, group.getOwner().getID());
+			pstmt.setString(2, group.getNome());
+			pstmt.setBoolean(3, true);
 			pstmt.execute();
 			pstmt.close();
+			
+			sql = "SELECT * FROM GRUPO WHERE OWNER = ? AND NOME = ? ";
+			pstmt = conec.prepareStatement(sql);
+			pstmt.setInt(1, group.getOwner().getID());
+			pstmt.setString(2, group.getNome());
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+			group.setID(rs.getInt("ID"));
+			rs.close();
+			pstmt.close();
+			
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
@@ -696,7 +705,7 @@ public class Database implements DataPersistenceInterface {
 
 			pstmt.execute();
 			pstmt.close();
-			System.out.println("invite deletado");
+			
 			System.out.println(invite.getID());
 			System.out.println(invite.getFrom().getID());
 			System.out.println(invite.getTo().getID());

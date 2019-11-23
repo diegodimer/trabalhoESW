@@ -7,6 +7,10 @@ public class Group extends Invite{
 	private User owner;
 	private List<User> members;
 	
+	public Group(String nome, User owner) {
+		this.nome = nome;
+		this.owner= owner;
+	}
 	public Group(String nome){
 		this.nome = nome;
 	}

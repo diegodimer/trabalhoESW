@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -26,6 +27,7 @@ import reunio.Group;
 import reunio.Invite;
 import reunio.Meeting;
 import reunio.User;
+import java.awt.CardLayout;
 
 public class UserInterface {
 
@@ -35,10 +37,11 @@ public class UserInterface {
 	private JLabel imgRedDot;
 	private JScrollPane scrollMyGroups;
 	protected JList groupsJList;
+	protected JPanel panelGroups;
 	protected DefaultListModel<Group> groupList;
 	private JTable table;
 	@SuppressWarnings("serial")
-	private DefaultTableModel modelo = new DefaultTableModel() {
+	protected DefaultTableModel modelo = new DefaultTableModel() {
 
 	    @Override
 	    public boolean isCellEditable(int row, int column) {
@@ -123,6 +126,7 @@ public class UserInterface {
 					notificacoes.remove(inv);
 					updateRedDot(frame);
 					pesquisar(modelo, frame);
+					myGroupsBox(frame);
 					updateFrame();
 				}
 			});
@@ -179,21 +183,27 @@ public class UserInterface {
 		
 	}
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	
 	protected void myMeetingsBox(JFrame frame) {
-		JScrollPane scrollMyMeetings = new JScrollPane();
-		scrollMyMeetings.setBounds(66, 404, 887, 227);
-		frame.getContentPane().add(scrollMyMeetings);
+		//frame.getContentPane().add(scrollMyMeetings);
 		
 		JPanel panel = new JPanel();
-		scrollMyMeetings.setViewportView(panel);
+		//scrollMyMeetings.setViewportView(panel);
 		panel.setBackground(Color.WHITE);
 		panel.setBorder(new LineBorder(Color.DARK_GRAY, 3, true));
 		panel.setLayout(new GridLayout(0, 1, 0, 0));
-		
 		table = new JTable(modelo);
+		table.setFillsViewportHeight(true);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		panel.add(table);
+		
+		JScrollPane scrollMyMeetings = new JScrollPane(table);
+		scrollMyMeetings.setBounds(66, 404, 887, 227);
+		
+		panel.add(scrollMyMeetings);
+		frame.getContentPane().add(scrollMyMeetings);
 		modelo.addColumn("início");
 		modelo.addColumn("fim");
 		modelo.addColumn("assunto");
@@ -206,7 +216,7 @@ public class UserInterface {
 		frame.getContentPane().add(labelReunioes);
 	}
 	
-	private void pesquisar(DefaultTableModel modelo, JFrame frame) {
+	protected void pesquisar(DefaultTableModel modelo, JFrame frame) {
 		/* Essa função monta a tabela com as reuniões do usuário */
         modelo.setNumRows(0);
         for (Meeting c : usuario.listMyMeetings()) {
@@ -228,7 +238,7 @@ public class UserInterface {
 		frame.getContentPane().add(scrollMyGroups);
 		//
 		
-		JPanel panelGroups = new JPanel();
+		panelGroups = new JPanel();
 		scrollMyGroups.setViewportView(panelGroups);
 		panelGroups.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		panelGroups.setBackground(Color.WHITE);
