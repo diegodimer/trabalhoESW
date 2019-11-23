@@ -23,7 +23,7 @@ public interface DataPersistenceInterface {
     // funções CRUD para Reuniões
     public List<Meeting> findMeetingByTopic (String assunto); //
     public List<Meeting> findMeetingByPlace (String local); //
-    public List<Meeting> findMeetingByID (int id); //
+    public Meeting findMeetingByID (int id); //
     public void createMeeting (Meeting meeting);
     public void updateMeeting (Meeting meeting);
     public void deleteMeeting (Meeting meeting);
@@ -73,4 +73,6 @@ public interface DataPersistenceInterface {
     public boolean isProf(User user);
     public boolean isGroupActive(Group group);
     public int getInviteType(Invite invite);
+    
+    public List<Invite> listUserInvites(User user);
 }

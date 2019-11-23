@@ -28,7 +28,7 @@ public class Meeting extends Invite {
 
 	@Override
 	public String getTypeName() {
-		return "Meeting";
+		return "Participar da reunião sobre " + this.assunto;
 	}
 
 	public String getInicio() {

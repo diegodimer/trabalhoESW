@@ -17,17 +17,15 @@ public abstract class User {
 	private List<Invite> notifications;
 
 	public User(int ID, String nomeCompleto, String userName, String numeroMatricula, String email, String telefone, int cursoID) {
-		this.ID = ID;
+		this.setID(ID);
 		this.nomeCompleto = nomeCompleto;
 		this.userName = userName;
 		this.numeroMatricula = numeroMatricula;
 		this.email = email;
 		this.telefone = telefone;
 		this.cursoID = cursoID;
-		this.notifications = new ArrayList<Invite>();
-		for(int i=0; i<5;i++) {
-			this.notifications.add(new Group("a"));	
-		}
+		
+		
 	}
 	public String getNomeCompleto() {
 		return nomeCompleto;
@@ -66,7 +64,8 @@ public abstract class User {
 		this.cursoID = cursoID;
 	}
 	public List<Invite> getNotifications() {
-		return notifications;
+		var db = new Database();
+		return db.listUserInvites(this);
 	}
 	public void setNotifications(List<Invite> notifications) {
 		this.notifications = notifications;
@@ -79,15 +78,19 @@ public abstract class User {
 	}
 	
 	public void acceptInvite(Invite invite) {
-		InviteType tipo = invite.getType();
 		Database db = new Database();
 		// eu posso passar o invite aqui pq vou usar o ID pra adicionar ao grupo!
-		if (tipo == InviteType.GROUP) {
+		if (invite instanceof Group) {
+			System.out.println("grupo");
+			invite.setType(InviteType.GROUP);
 			db.addUserToGroup(this, invite);
-		} else if (tipo == InviteType.MEETING) {
+		} else if (invite instanceof Meeting) {
+			System.out.println("reuniao");
+			invite.setType(InviteType.MEETING);
 			db.addUserToMeeting(this, invite); 
 		}
 		db.deleteInvite(invite);
+		
 	}
 	
 	public List<Meeting> listMyMeetings(){
@@ -131,6 +134,12 @@ public abstract class User {
 	public static User findUser(String nome) {
 		Database db = new Database();
 		return db.findUserByUserName(nome);
+	}
+	public int getID() {
+		return ID;
+	}
+	public void setID(int iD) {
+		ID = iD;
 	}
 	
 }

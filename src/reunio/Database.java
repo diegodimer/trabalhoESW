@@ -19,10 +19,12 @@ public class Database implements DataPersistenceInterface {
 
 	public Database() {
 		if (conec == null)
-			connect();
+			conec = connect();
 	}
 
-	private void connect() {
+	private static Connection connect() {
+		if (conec != null)
+			return conec;
 		try {
 			File databaseFile = new File("banco_de_dados.db");
 			boolean dataExists = databaseFile.exists();
@@ -36,17 +38,17 @@ public class Database implements DataPersistenceInterface {
 			}
 
 			System.out.println("ConexÃ£o realizada.");
-
+			return conec;
 		} catch (SQLException e) {
 			throw new RuntimeException("Falha na comunicaÃ§Ã£o com o banco de dados!");
 		}
 	}
 
-	private void createTables() {
+	private static void createTables() {
 		// TODO Auto-generated method stub
 		Statement statement;
 		try {
-			statement = Database.conec.createStatement();
+			statement = conec.createStatement();
 			statement.execute("CREATE TABLE IF NOT EXISTS CURSOS(  ID INTEGER PRIMARY KEY, NOME TEXT)");
 			statement.execute(
 					"CREATE TABLE IF NOT EXISTS USER( ID INTEGER PRIMARY KEY, NOME TEXT, USER TEXT UNIQUE, SENHA TEXT, MATRICULA TEXT, EMAIL TEXT, TELEFONE TEXT, CURSO INTEGER REFERENCES CURSOS, PROF BOOLEAN )");
@@ -66,14 +68,46 @@ public class Database implements DataPersistenceInterface {
 			statement.execute(
 					"CREATE TABLE IF NOT EXISTS INVITE( USER_FROM INTEGER REFERENCES USER, USER_TO INTEGER REFERENCES USER, TYPE INTEGER, INVITE INTEGER)");
 
+			var cursos = new ArrayList<String>();
+			cursos.add("Administração");
+			cursos.add(" Ciências Contábeis");
+			cursos.add(" Gestão em Produção Industrial");
+			cursos.add(" Gestão de Recursos Humanos");
+			cursos.add(" Gestão Financeira");
+			cursos.add(" Gestão Pública");
+			cursos.add(" Letras - Língua Portuguesa");
+			cursos.add(" Logística");
+			cursos.add(" Marketing");
+			cursos.add(" Pedagogia");
+			cursos.add(" Processos gerenciais");
+			cursos.add(" Redes de Computadores");
+			cursos.add(" Serviço Social");
+			cursos.add(" Análise e Desenvolvimento de Sistemas");
+			cursos.add(" Gestão Comercial");
+
+			for (String c : cursos) {
+				try {
+					String sql = "INSERT INTO CURSOS(NOME) values(?)";
+
+					PreparedStatement pstmt;
+					pstmt = conec.prepareStatement(sql);
+					pstmt.setString(1, c);
+					pstmt.execute();
+					pstmt.close();
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+					e.printStackTrace();
+				}
+
+			}
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public List<Group> findGroupByName(String name) {
-		// TODO Auto-generated method stub
 		PreparedStatement pstmt;
 		ResultSet rs;
 		List<Group> list = new ArrayList<Group>();
@@ -83,16 +117,17 @@ public class Database implements DataPersistenceInterface {
 					+ "FROM (SELECT ID, OWNER, NOME, ATIVO FROM GRUPO " + "WHERE NOME = ?) AS T1 "
 					+ "JOIN (SELECT ID, USER FROM USER) AS T2 " + "ON T1.OWNER = T2.ID";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, name);
 			rs = pstmt.executeQuery();
 
-			groupResults(rs, list);
+			groupResults(rs);
 
 			rs.close();
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return list;
@@ -107,7 +142,7 @@ public class Database implements DataPersistenceInterface {
 		try {
 			String sql = "select GRUPO.ID, GRUPO.nome as GRUPONOME, USER.user as OWNER, ativo from GRUPO join USER on(GRUPO.owner = user.ID) where USER.USER = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, user);
 			rs = pstmt.executeQuery();
 
@@ -117,6 +152,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return grupo;
@@ -132,7 +168,7 @@ public class Database implements DataPersistenceInterface {
 		try {
 			String sql = "SELECT * FROM GRUPO WHERE ID= ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setInt(1, id);
 			rs = pstmt.executeQuery();
 
@@ -142,6 +178,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return grupo;
@@ -171,7 +208,7 @@ public class Database implements DataPersistenceInterface {
 			String sql = "INSERT INTO " + "GRUPO (ID, OWNER, NOME, ATIVO) "
 					+ "VALUES(?, (SELECT ID FROM USER WHERE USER = ?), " + "?, ?)";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setInt(1, group.getID());
 			pstmt.setString(2, group.getOwner().getUserName());
 			pstmt.setString(3, group.getNome());
@@ -180,6 +217,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -192,7 +230,7 @@ public class Database implements DataPersistenceInterface {
 			String sql = "UPDATE GRUPO " + "SET OWNER = (SELECT ID FROM USER WHERE USER = ?), " + "SET NOME = ?"
 					+ "SET ATIVO = ? " + "WHERE ID = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, group.getOwner().getUserName());
 			pstmt.setString(2, group.getNome());
 			pstmt.setBoolean(3, isGroupActive(group));
@@ -201,6 +239,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -212,18 +251,18 @@ public class Database implements DataPersistenceInterface {
 		try {
 			String sql = "DELETE FROM GRUPO WHERE ID = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setInt(1, group.getID());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public User findUserByUserName(String user) {
-		// TODO Auto-generated method stub
 		PreparedStatement pstmt;
 		ResultSet rs;
 		User usuario = null;
@@ -231,7 +270,7 @@ public class Database implements DataPersistenceInterface {
 		try {
 			String sql = "SELECT * FROM USER WHERE USER.USER= ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, user);
 			rs = pstmt.executeQuery();
 
@@ -246,7 +285,6 @@ public class Database implements DataPersistenceInterface {
 				int curso = rs.getInt("CURSO");
 				boolean prof = rs.getBoolean("PROF");
 
-				
 				if (prof == true) {
 					// User(String nomeCompleto, String userName, String senha, String
 					// numeroMatricula, String email, String telefone, int cursoID)
@@ -263,6 +301,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return usuario;
@@ -277,7 +316,7 @@ public class Database implements DataPersistenceInterface {
 			String sql = "INSERT INTO " + "USER (ID, NOME, USER, SENHA, MATRICULA, EMAIL, TELEFONE, CURSO, PROF) "
 					+ "VALUES(NULL, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, user.getNomeCompleto());
 			pstmt.setString(2, user.getUserName());
 			pstmt.setString(3, password);
@@ -290,6 +329,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -302,7 +342,7 @@ public class Database implements DataPersistenceInterface {
 			String sql = "UPDATE USER " + "SET NOME = ?, " + "SET SENHA = ?, " + "SET MATRICULA = ?, "
 					+ "SET EMAIL = ?, " + "SET TELEFONE = ?, " + "SET CURSO = ?, " + "SET PROF = ? " + "WHERE USER = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, user.getNomeCompleto());
 			pstmt.setString(2, password);
 			pstmt.setString(3, user.getNumeroMatricula());
@@ -315,6 +355,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -326,12 +367,13 @@ public class Database implements DataPersistenceInterface {
 		try {
 			String sql = "DELETE FROM USER WHERE USER = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, user.getUserName());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -341,12 +383,12 @@ public class Database implements DataPersistenceInterface {
 		PreparedStatement pstmt;
 		ResultSet rs;
 		List<Meeting> list = new ArrayList<Meeting>();
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		try {
 			String sql = "SELECT ID, DATA, LOCAL, FINALDATA, ASSUNTO " + "FROM REUNIAO WHERE ASSUNTO = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, assunto);
 			rs = pstmt.executeQuery();
 
@@ -356,6 +398,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return list;
@@ -364,9 +407,9 @@ public class Database implements DataPersistenceInterface {
 	public void meetingResults(ResultSet rs, List<Meeting> list, DateFormat df) throws SQLException {
 		while (rs.next()) {
 			int id = rs.getInt("ID");
-			String inicio = df.format(rs.getDate("DATA"));
+			String inicio = rs.getString("DATA");
 			String local = rs.getString("LOCAL");
-			String fim = df.format(rs.getDate("FINALDATA"));
+			String fim = rs.getString("FINALDATA");
 			String assunto = rs.getString("ASSUNTO");
 
 			// Meeting(String inicio, String fim, String assunto, String local, List<User>
@@ -383,12 +426,12 @@ public class Database implements DataPersistenceInterface {
 		PreparedStatement pstmt;
 		ResultSet rs;
 		List<Meeting> list = new ArrayList<Meeting>();
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		try {
 			String sql = "SELECT ID, DATA, LOCAL, FINALDATA, ASSUNTO " + "FROM REUNIAO WHERE LOCAL = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, local);
 			rs = pstmt.executeQuery();
 
@@ -398,23 +441,24 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return list;
 	}
 
 	@Override
-	public List<Meeting> findMeetingByID(int id) {
+	public Meeting findMeetingByID(int id) {
 		// TODO Auto-generated method stub
 		PreparedStatement pstmt;
 		ResultSet rs;
 		List<Meeting> list = new ArrayList<Meeting>();
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		try {
 			String sql = "SELECT ID, DATA, LOCAL, FINALDATA, ASSUNTO " + "FROM REUNIAO WHERE ID = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setInt(1, id);
 			rs = pstmt.executeQuery();
 
@@ -424,9 +468,10 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
-		return list;
+		return list.get(0);
 	}
 
 	@Override
@@ -437,7 +482,7 @@ public class Database implements DataPersistenceInterface {
 		try {
 			String sql = "INSERT INTO REUNIAO (DATA, LOCAL, FINALDATA, ASSUNTO, GRUPO) " + "VALUES(?, ?, ?, ?, ?)";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, meeting.getInicio());
 			pstmt.setString(2, meeting.getLocal());
 			pstmt.setString(3, meeting.getFim());
@@ -445,8 +490,20 @@ public class Database implements DataPersistenceInterface {
 			pstmt.setInt(5, meeting.getGrupo());
 			pstmt.execute();
 			pstmt.close();
+
+			sql = "SELECT * FROM REUNIAO WHERE DATA = ? AND LOCAL = ? ";
+			pstmt = conec.prepareStatement(sql);
+			pstmt.setString(1, meeting.getInicio());
+			pstmt.setString(2, meeting.getLocal());
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+			meeting.setID(rs.getInt("ID"));
+			rs.close();
+			pstmt.close();
+
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -464,12 +521,13 @@ public class Database implements DataPersistenceInterface {
 		try {
 			String sql = "DELETE FROM REUNIAO WHERE ID = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setInt(1, meeting.getID());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -532,7 +590,7 @@ public class Database implements DataPersistenceInterface {
 		try {
 			String sql = "SELECT ID, NOME, USER, MATRICULA, EMAIL, TELEFONE, CURSO, PROF FROM USER WHERE USER = ? AND SENHA = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, name);
 			pstmt.setString(2, password);
 			rs = pstmt.executeQuery();
@@ -547,7 +605,6 @@ public class Database implements DataPersistenceInterface {
 				int curso = rs.getInt("CURSO");
 				boolean prof = rs.getBoolean("PROF");
 
-				
 				if (prof) {
 					student = new Teacher(ID, nomeCompleto, userName, matricula, email, telefone, curso);
 				} else {
@@ -566,6 +623,7 @@ public class Database implements DataPersistenceInterface {
 
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 
 		}
 		return student;
@@ -590,6 +648,7 @@ public class Database implements DataPersistenceInterface {
 			st.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return lista;
@@ -607,75 +666,81 @@ public class Database implements DataPersistenceInterface {
 		PreparedStatement pstmt;
 
 		try {
-			String sql = "INSERT INTO " + "INVITE (USER_FROM, USER_TO, TYPE, INVITE) "
-					+ "VALUES((SELECT ID FROM USER WHERE USER = ?), " + "(SELECT ID FROM USER WHERE USER = ?), "
-					+ "?, ?)";
+			String sql = "INSERT INTO INVITE (USER_FROM, USER_TO, TYPE, INVITE) VALUES(?, ?, ?, ?)";
 
-			pstmt = Database.conec.prepareStatement(sql);
-			pstmt.setString(1, invite.getFrom().getUserName());
-			pstmt.setString(2, invite.getTo().getUserName());
+			pstmt = conec.prepareStatement(sql);
+			pstmt.setInt(1, invite.getFrom().getID());
+			pstmt.setInt(2, invite.getTo().getID());
 			pstmt.setInt(3, getInviteType(invite));
 			pstmt.setInt(4, invite.getID());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void deleteInvite(Invite invite) {
-		// TODO Auto-generated method stub
 		PreparedStatement pstmt;
 
 		try {
-			String sql = "DELETE FROM INVITE " + "WHERE INVITE = ?";
+			String sql = "DELETE FROM INVITE WHERE INVITE = ? and USER_FROM = ? and USER_TO = ? and TYPE = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setInt(1, invite.getID());
+			pstmt.setInt(2, invite.getFrom().getID());
+			pstmt.setInt(3, invite.getTo().getID());
+			pstmt.setInt(4, getInviteType(invite));
+
 			pstmt.execute();
 			pstmt.close();
+			System.out.println("invite deletado");
+			System.out.println(invite.getID());
+			System.out.println(invite.getFrom().getID());
+			System.out.println(invite.getTo().getID());
+			System.out.println(getInviteType(invite));
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void addUserToGroup(User user, Invite group) {
-		// TODO Auto-generated method stub
 		PreparedStatement pstmt;
 
 		try {
-			String sql = "INSERT INTO " + "GRUPO_MEMBRO (USER_ID, GRUPO_ID, ATIVO) "
-					+ "VALUES((SELECT ID FROM USER WHERE USER = ?), " + "?, ?)";
+			String sql = "INSERT INTO GRUPO_MEMBRO (USER_ID, GRUPO_ID, ATIVO) " + "VALUES(?, ?, ?)";
 
-			pstmt = Database.conec.prepareStatement(sql);
-			pstmt.setString(1, user.getUserName());
+			pstmt = conec.prepareStatement(sql);
+			pstmt.setInt(1, user.getID());
 			pstmt.setInt(2, group.getID());
-			pstmt.setBoolean(3, true);
+			pstmt.setInt(3, 1);
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void addUserToMeeting(User user, Invite meeting) {
-		// TODO Auto-generated method stub
 		PreparedStatement pstmt;
 
 		try {
-			String sql = "INSERT INTO " + "REUNIAO_MEMBRO (USER_ID, REUNIAO_ID) "
-					+ "VALUES((SELECT ID FROM USER WHERE USER = ?), " + "?)";
+			String sql = "INSERT INTO REUNIAO_MEMBRO (USER_ID, REUNIAO_ID) VALUES(?, ?)";
 
-			pstmt = Database.conec.prepareStatement(sql);
-			pstmt.setString(1, user.getUserName());
+			pstmt = conec.prepareStatement(sql);
+			pstmt.setInt(1, user.getID());
 			pstmt.setInt(2, meeting.getID());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -685,14 +750,14 @@ public class Database implements DataPersistenceInterface {
 		PreparedStatement pstmt;
 		ResultSet rs;
 		List<Meeting> list = new ArrayList<Meeting>();
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		try {
 			String sql = "SELECT ID, DATA, LOCAL, FINALDATA, ASSUNTO " + "FROM REUNIAO "
 					+ "WHERE ID IN (SELECT REUNIAO_ID FROM REUNIAO_MEMBRO "
 					+ "WHERE USER_ID IN (SELECT ID FROM USER WHERE USER = ?))";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, user.getUserName());
 			rs = pstmt.executeQuery();
 
@@ -702,6 +767,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return list;
@@ -713,7 +779,7 @@ public class Database implements DataPersistenceInterface {
 		PreparedStatement pstmt;
 		ResultSet rs;
 		List<Meeting> list = new ArrayList<Meeting>();
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = Date.valueOf(time);
 
 		try {
@@ -721,7 +787,7 @@ public class Database implements DataPersistenceInterface {
 					+ "WHERE ID IN (SELECT REUNIAO_ID FROM REUNIAO_MEMBRO "
 					+ "WHERE USER_ID IN (SELECT ID FROM USER WHERE USER = ?)) " + "AND DATA >= ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, user.getUserName());
 			pstmt.setDate(2, date);
 			rs = pstmt.executeQuery();
@@ -732,6 +798,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return list;
@@ -739,16 +806,15 @@ public class Database implements DataPersistenceInterface {
 
 	@Override
 	public List<Group> listUserGroups(User user, boolean active) {
-		// TODO Auto-generated method stub
 		PreparedStatement pstmt;
 		ResultSet rs;
 		List<Group> list = new ArrayList<Group>();
 
 		try {
-			String sql = "select GRUPO.nome as GRUPONOME, user.user as OWNER, GRUPO_MEMBRO.ativo, grupo.id from GRUPO_MEMBRO join user on(GRUPO_MEMBRO.USER_ID = user.id) \r\n" + 
-					"	join grupo on(GRUPO.ID = GRUPO_MEMBRO.GRUPO_ID) where user.user = ? and GRUPO_MEMBRO.ativo= ?";
+			String sql = "select GRUPO.nome as GRUPONOME, user.user as OWNER, GRUPO_MEMBRO.ativo, grupo.id from GRUPO_MEMBRO join user on(GRUPO_MEMBRO.USER_ID = user.id) \r\n"
+					+ "	join grupo on(GRUPO.ID = GRUPO_MEMBRO.GRUPO_ID) where user.user = ? and GRUPO_MEMBRO.ativo= ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, user.getUserName());
 			pstmt.setBoolean(2, active);
 			rs = pstmt.executeQuery();
@@ -761,6 +827,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return list;
@@ -775,7 +842,7 @@ public class Database implements DataPersistenceInterface {
 			String sql = "UPDATE GRUPO_MEMBRO " + "SET ATIVO = ? "
 					+ "WHERE USER_ID IN (SELECT ID FROM USER WHERE USER = ?) " + "AND GRUPO_ID = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setBoolean(1, false);
 			pstmt.setString(2, user.getUserName());
 			pstmt.setInt(3, group.getID());
@@ -783,6 +850,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -795,13 +863,14 @@ public class Database implements DataPersistenceInterface {
 			String sql = "DELETE FROM REUNIAO_MEMBRO " + "WHERE USER_ID IN (SELECT ID FROM USER WHERE USER = ?) "
 					+ "AND REUNIAO_ID = ?";
 
-			pstmt = Database.conec.prepareStatement(sql);
+			pstmt = conec.prepareStatement(sql);
 			pstmt.setString(1, user.getUserName());
 			pstmt.setInt(2, meeting.getID());
 			pstmt.execute();
 			pstmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -838,6 +907,94 @@ public class Database implements DataPersistenceInterface {
 		}
 
 		return type;
+	}
+
+	@Override
+	public List<Invite> listUserInvites(User user) {
+		var invites = new ArrayList<Invite>();
+
+		PreparedStatement pstmt;
+		ResultSet rs;
+
+		try {
+			String sql = "SELECT * FROM INVITE WHERE USER_TO = ?";
+
+			pstmt = conec.prepareStatement(sql);
+			pstmt.setInt(1, user.getID());
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				Invite invite;
+				InviteType tipo = InviteType.values()[rs.getInt("TYPE")];
+
+				var from = (this.findUserByID(rs.getInt("USER_FROM")));
+				var to = user;
+				var id = rs.getInt("INVITE");
+
+				// é esperado que o ID seja preenchido aqui!
+				if (tipo == InviteType.GROUP) {
+					invite = this.findGroupByID(id);
+				} else {
+					invite = this.findMeetingByID(id);
+				}
+				invite.setFrom(from);
+				invite.setTo(to);
+				invites.add(invite);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			e.printStackTrace();
+		}
+
+		return invites;
+
+	}
+
+	private User findUserByID(int int1) {
+		PreparedStatement pstmt;
+		ResultSet rs;
+		User usuario = null;
+
+		try {
+			String sql = "SELECT * FROM USER WHERE USER.ID = ?";
+
+			pstmt = conec.prepareStatement(sql);
+			pstmt.setInt(1, int1);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				int ID = rs.getInt("ID");
+				String nomeCompleto = rs.getString("NOME");
+				String userName = rs.getString("USER");
+				String matricula = rs.getString("MATRICULA");
+				String email = rs.getString("EMAIL");
+				String telefone = rs.getString("TELEFONE");
+				int curso = rs.getInt("CURSO");
+				boolean prof = rs.getBoolean("PROF");
+
+				if (prof == true) {
+					// User(String nomeCompleto, String userName, String senha, String
+					// numeroMatricula, String email, String telefone, int cursoID)
+					Teacher teacher = new Teacher(ID, nomeCompleto, userName, matricula, email, telefone, curso);
+					usuario = teacher;
+				} else {
+					// User(String nomeCompleto, String userName, String senha, String
+					// numeroMatricula, String email, String telefone, int cursoID)
+					Student student = new Student(ID, nomeCompleto, userName, matricula, email, telefone, curso);
+					usuario = student;
+				}
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+
+		return usuario;
 	}
 
 }

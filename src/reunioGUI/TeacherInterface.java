@@ -195,8 +195,9 @@ public class TeacherInterface extends UserInterface implements GUIFactory{
 			String _fim = datePicker.getJFormattedTextField().getText() +" "+ timeEditorFim.getFormat().format(fim.getValue());
 			String _assunto = assunto.getText();
 			String _local = local.getSelectedItem();
-			
 			int _grupo = groupList.get(groupsJList.getSelectedIndex()).getID();
+			
+			
 			// pega a capacidade da sala pra não deixar por mais participante do que ela
 			int capacidade = Application.getCapacity(_local);
 			
@@ -216,6 +217,7 @@ public class TeacherInterface extends UserInterface implements GUIFactory{
 					} catch(Exception exc) {
 						JOptionPane optionPane = new JOptionPane(exc.getMessage(), JOptionPane.ERROR_MESSAGE);    
 						JDialog dialog = optionPane.createDialog("ERRO");
+						exc.printStackTrace();
 						dialog.setAlwaysOnTop(true);
 						dialog.setVisible(true);
 					}

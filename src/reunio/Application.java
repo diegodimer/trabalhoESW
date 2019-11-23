@@ -34,12 +34,10 @@ public class Application {
 			else
 				factory = new RegisterInterface();
 		else if (user instanceof Teacher ) {
-			System.out.println("techar");
 			factory = new TeacherInterface();
 			
 		}
 		else if (user instanceof Student) {
-			System.out.println("studanth");
 			factory = new StudentInterface();
 		}
 		

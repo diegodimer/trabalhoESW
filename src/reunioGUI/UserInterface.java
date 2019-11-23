@@ -122,6 +122,7 @@ public class UserInterface {
 					panelNotifications.remove(optionPanel);
 					notificacoes.remove(inv);
 					updateRedDot(frame);
+					pesquisar(modelo, frame);
 					updateFrame();
 				}
 			});
