@@ -166,7 +166,7 @@ public class Database implements DataPersistenceInterface {
 		Group grupo = null;
 
 		try {
-			String sql = "SELECT * FROM GRUPO WHERE ID= ?";
+			String sql = "select GRUPO.ID, GRUPO.nome as GRUPONOME, USER.user as OWNER, ativo from GRUPO join USER on(GRUPO.owner = user.ID) where GRUPO.ID=?";
 
 			pstmt = conec.prepareStatement(sql);
 			pstmt.setInt(1, id);

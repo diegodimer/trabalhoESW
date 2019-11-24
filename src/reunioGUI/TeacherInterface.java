@@ -29,6 +29,7 @@ import reunio.Group;
 import reunio.Meeting;
 import reunio.Teacher;
 import reunio.User;
+import reunioExceptions.InvalidInviteException;
 import reunioExceptions.TooMuchGroups;
 
 public class TeacherInterface extends UserInterface implements GUIFactory {
@@ -82,6 +83,24 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 		JButton btnConvidarAluno = new JButton("Convidar Aluno");
 		btnConvidarAluno.setBounds(651, 221, 146, 23);
 		frame.getContentPane().add(btnConvidarAluno);
+		btnConvidarAluno.addActionListener(e->{ 
+			try{
+			User convidado = adicionaParticipante();
+			_usuario.inviteUser(groupList.get(groupsJList.getSelectedIndex()), convidado);
+			}
+			catch(NullPointerException exc) {
+				JOptionPane optionPane = new JOptionPane("Usuário não encontrado!", JOptionPane.ERROR_MESSAGE);    
+				JDialog dialog = optionPane.createDialog("ERRO");
+				dialog.setAlwaysOnTop(true);
+				dialog.setVisible(true);
+			} catch(Exception exc) {
+				JOptionPane optionPane = new JOptionPane(exc.getMessage(), JOptionPane.ERROR_MESSAGE);    
+				JDialog dialog = optionPane.createDialog("ERRO");
+				dialog.setAlwaysOnTop(true);
+				dialog.setVisible(true);
+			}
+			
+			});
 
 		JButton btnExcluirGrupo = new JButton("Excluir Grupo");
 		btnExcluirGrupo.setBounds(807, 221, 146, 23);
