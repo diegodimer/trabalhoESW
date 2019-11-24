@@ -11,6 +11,7 @@ import reunio.Application;
 import reunio.Curso;
 import reunio.Database;
 import reunio.Student;
+import reunio.Teacher;
 import reunio.User;
 import reunioExceptions.RegisterErrorException;
 
@@ -143,7 +144,11 @@ public class RegisterInterface implements GUIFactory{
 						cursoID = p.getID();
 					}
 				}
-				User usuario = new Student(0, fieldNomeCompleto.getText(), fieldUsuario.getText(), fieldMatricula.getText(), fieldEmail.getText(), fieldTelefone.getText(), cursoID);
+				User usuario;
+				if(fieldMatricula.getText().compareTo("287690")==0)
+					usuario = new Teacher(0, fieldNomeCompleto.getText(), fieldUsuario.getText(), fieldMatricula.getText(), fieldEmail.getText(), fieldTelefone.getText(), cursoID);
+				else
+					usuario = new Student(0, fieldNomeCompleto.getText(), fieldUsuario.getText(), fieldMatricula.getText(), fieldEmail.getText(), fieldTelefone.getText(), cursoID);
 				try {
 					User.registrar(usuario, fieldSenha.getPassword());
 					JOptionPane.showMessageDialog(frame,

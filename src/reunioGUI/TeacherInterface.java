@@ -59,7 +59,8 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 
 		lblUsername.setFont(new Font("Monospaced", Font.PLAIN, 41));
 		lblUsername.setBounds(350, 38, 764, 82);
-
+		
+		panelGroups.removeAll();
 		myGroupsBox(this.frame);
 
 		frame.getContentPane().add(lblUsername);
@@ -85,6 +86,7 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 		JButton btnExcluirGrupo = new JButton("Excluir Grupo");
 		btnExcluirGrupo.setBounds(807, 221, 146, 23);
 		frame.getContentPane().add(btnExcluirGrupo);
+		btnExcluirGrupo.addActionListener(e-> { excluirGrupo(groupList.get(groupsJList.getSelectedIndex()));});
 
 		JButton btnListarParticipantes = new JButton("Listar Participantes");
 		btnListarParticipantes.setBounds(651, 291, 146, 23);
@@ -110,7 +112,23 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 		JButton btnEscreverRelatrio = new JButton("Escrever Relat\u00F3rio");
 		btnEscreverRelatrio.setBounds(294, 370, 146, 23);
 		frame.getContentPane().add(btnEscreverRelatrio);
-
+		btnEscreverRelatrio.addActionListener(e->{
+			try {
+				// escrever relatório
+				System.out.println(_usuario.listMyMeetings().get(table.getSelectedRow()).getAssunto());
+				
+			} catch(IndexOutOfBoundsException exc) {
+				JOptionPane optionPane = new JOptionPane("Você precisa selecionar uma reunião!", JOptionPane.ERROR_MESSAGE);    
+				JDialog dialog = optionPane.createDialog("ERRO");
+				dialog.setAlwaysOnTop(true);
+				dialog.setVisible(true);
+			} catch (Exception exc) {
+				JOptionPane optionPane = new JOptionPane(exc.getMessage(), JOptionPane.ERROR_MESSAGE);    
+				JDialog dialog = optionPane.createDialog("ERRO");
+				dialog.setAlwaysOnTop(true);
+				dialog.setVisible(true);
+			}
+		});
 		myMeetingsBox(this.frame);
 
 		JLabel lblAesParaGrupos = new JLabel("A\u00E7\u00F5es para Grupos");
@@ -265,6 +283,8 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 	}
 
 	private User adicionaParticipante() {
+		/* Mostra um painelzinho com um textfield pedindo o nome de um participante pra reunião,
+		 * após, retorna o usuário desse participante. */
 		JPanel myPanel = new JPanel();
 		myPanel.add(new JLabel("Usuário do participante"));
 		JTextField part = new JTextField(30);
@@ -275,7 +295,15 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 		else
 			return null;
 	}
-
+	
+	private void excluirGrupo(Group grupo) {
+		/* int _grupo = groupList.get(groupsJList.getSelectedIndex()).getID();
+		 * excluir da database o grupo selecionado no panel de grupos do usuário */
+		grupo.remove();
+		panelGroups.removeAll();
+		myGroupsBox(frame);
+		
+	};
 	@Override
 	public void createScreen() {
 		/* Função da interface, do design pattern de factory */

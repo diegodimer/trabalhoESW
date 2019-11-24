@@ -50,5 +50,10 @@ public class Group extends Invite{
 		return nome;
 		
 	}
+	public void remove() {
+		Database db = new Database();
+		db.deleteGroup(this);
+		
+	}
 	
 }
