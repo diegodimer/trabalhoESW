@@ -56,12 +56,11 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 		frame.getContentPane().setBackground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 
-		JLabel lblUsername = new JLabel("Bem-vindo, prof " + _usuario.getUserName());
+		JLabel lblUsername = new JLabel("Bem-vindo, prof " + _usuario.getNomeCompleto());
 
 		lblUsername.setFont(new Font("Monospaced", Font.PLAIN, 41));
 		lblUsername.setBounds(350, 38, 764, 82);
 		
-		panelGroups.removeAll();
 		myGroupsBox(this.frame);
 
 		frame.getContentPane().add(lblUsername);
@@ -89,11 +88,13 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 			_usuario.inviteUser(groupList.get(groupsJList.getSelectedIndex()), convidado);
 			}
 			catch(NullPointerException exc) {
+				exc.printStackTrace();
 				JOptionPane optionPane = new JOptionPane("Usuário não encontrado!", JOptionPane.ERROR_MESSAGE);    
 				JDialog dialog = optionPane.createDialog("ERRO");
 				dialog.setAlwaysOnTop(true);
 				dialog.setVisible(true);
 			} catch(Exception exc) {
+				exc.printStackTrace();
 				JOptionPane optionPane = new JOptionPane(exc.getMessage(), JOptionPane.ERROR_MESSAGE);    
 				JDialog dialog = optionPane.createDialog("ERRO");
 				dialog.setAlwaysOnTop(true);
@@ -141,11 +142,13 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 				JDialog dialog = optionPane.createDialog("ERRO");
 				dialog.setAlwaysOnTop(true);
 				dialog.setVisible(true);
+				exc.printStackTrace();
 			} catch (Exception exc) {
 				JOptionPane optionPane = new JOptionPane(exc.getMessage(), JOptionPane.ERROR_MESSAGE);    
 				JDialog dialog = optionPane.createDialog("ERRO");
 				dialog.setAlwaysOnTop(true);
 				dialog.setVisible(true);
+				exc.printStackTrace();
 			}
 		});
 		myMeetingsBox(this.frame);
@@ -187,8 +190,7 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 			Group grupo = new Group(_nome, this._usuario);
 			try {
 				_usuario.createGroup(grupo);
-				panelGroups.removeAll();
-				myGroupsBox(frame);
+				listMyGroups();
 			} catch (TooMuchGroups exc) {
 				JOptionPane optionPane = new JOptionPane(exc.getMessage(), JOptionPane.ERROR_MESSAGE);    
 				JDialog dialog = optionPane.createDialog("ERRO");
@@ -292,6 +294,7 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 					JOptionPane optionPane = new JOptionPane(exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 					JDialog dialog = optionPane.createDialog("ERRO");
 					dialog.setAlwaysOnTop(true);
+					exc.printStackTrace();
 					dialog.setVisible(true);
 				}
 			});
@@ -319,8 +322,7 @@ public class TeacherInterface extends UserInterface implements GUIFactory {
 		/* int _grupo = groupList.get(groupsJList.getSelectedIndex()).getID();
 		 * excluir da database o grupo selecionado no panel de grupos do usuário */
 		grupo.remove();
-		panelGroups.removeAll();
-		myGroupsBox(frame);
+		listMyGroups();
 		
 	};
 	@Override

@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import reunioExceptions.InvalidInviteException;
 import reunioExceptions.LoginErrorException;
 
 import java.text.*;
@@ -204,8 +205,7 @@ public class Database implements DataPersistenceInterface {
 		PreparedStatement pstmt;
 
 		try {
-			String sql = "INSERT INTO GRUPO (OWNER, NOME, ATIVO) "
-					+ "VALUES(?, ?, ?)";
+			String sql = "INSERT INTO GRUPO (OWNER, NOME, ATIVO) " + "VALUES(?, ?, ?)";
 
 			pstmt = conec.prepareStatement(sql);
 			pstmt.setInt(1, group.getOwner().getID());
@@ -213,7 +213,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.setBoolean(3, true);
 			pstmt.execute();
 			pstmt.close();
-			
+
 			sql = "SELECT * FROM GRUPO WHERE OWNER = ? AND NOME = ? ";
 			pstmt = conec.prepareStatement(sql);
 			pstmt.setInt(1, group.getOwner().getID());
@@ -223,7 +223,7 @@ public class Database implements DataPersistenceInterface {
 			group.setID(rs.getInt("ID"));
 			rs.close();
 			pstmt.close();
-			
+
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
@@ -263,6 +263,14 @@ public class Database implements DataPersistenceInterface {
 			pstmt.setInt(1, group.getID());
 			pstmt.execute();
 			pstmt.close();
+
+			sql = "DELETE FROM GRUPO_MEMBRO WHERE GRUPO_ID = ?";
+
+			pstmt = conec.prepareStatement(sql);
+			pstmt.setInt(1, group.getID());
+			pstmt.execute();
+			pstmt.close();
+
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
@@ -669,11 +677,17 @@ public class Database implements DataPersistenceInterface {
 	}
 
 	@Override
-	public void addInvite(Invite invite) {
+	public void addInvite(Invite invite) throws InvalidInviteException {
 		// TODO Auto-generated method stub
 		PreparedStatement pstmt;
 
 		try {
+			if (invite instanceof Meeting) {
+				Meeting mt = (Meeting) invite;
+				Group grupo = new Group();
+				grupo.setID(mt.getGrupo());
+				inviteConsistency(invite.getTo(), grupo);
+			}
 			String sql = "INSERT INTO INVITE (USER_FROM, USER_TO, TYPE, INVITE) VALUES(?, ?, ?, ?)";
 
 			pstmt = conec.prepareStatement(sql);
@@ -704,7 +718,7 @@ public class Database implements DataPersistenceInterface {
 
 			pstmt.execute();
 			pstmt.close();
-			
+
 			System.out.println(invite.getID());
 			System.out.println(invite.getFrom().getID());
 			System.out.println(invite.getTo().getID());
@@ -826,7 +840,7 @@ public class Database implements DataPersistenceInterface {
 			pstmt.setString(1, user.getUserName());
 			pstmt.setBoolean(2, active);
 			rs = pstmt.executeQuery();
-			
+
 			while (rs.next()) {
 				list.add(groupResults(rs));
 			}
@@ -1001,6 +1015,34 @@ public class Database implements DataPersistenceInterface {
 		}
 
 		return usuario;
+	}
+
+	@Override
+	public void inviteConsistency(User usuario, Group grupo) throws InvalidInviteException {
+		try {
+			String sql = "SELECT COUNT(*) FROM GRUPO_MEMBRO WHERE GRUPO_ID = ? AND USER_ID = ? and ATIVO=1";
+			PreparedStatement pstmt;
+			pstmt = conec.prepareStatement(sql);
+			pstmt.setInt(1, grupo.getID());
+			pstmt.setInt(2, usuario.getID());
+			ResultSet rs = pstmt.executeQuery();
+			int membro = 0;
+			while (rs.next()) {
+				membro = rs.getInt("COUNT(*)");
+				System.out.println(membro);
+				rs.close();
+				pstmt.close();
+			}
+			if(membro == 0) {
+				throw new InvalidInviteException("Usuário não faz parte do grupo!");
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			e.printStackTrace();
+		}
+		
+
 	}
 
 }

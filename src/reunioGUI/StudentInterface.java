@@ -40,7 +40,7 @@ public class StudentInterface extends UserInterface implements GUIFactory{
 		myGroupsBox(this.frame);
 		myMeetingsBox(this.frame);
 		
-		JLabel lblUsername = new JLabel("Bem-vindo, " + _usuario .getUserName());
+		JLabel lblUsername = new JLabel("Bem-vindo, " + _usuario .getNomeCompleto());
 		lblUsername.setFont(new Font("Monospaced", Font.PLAIN, 41));
 		lblUsername.setBounds(350, 38, 764, 82);
 		frame.add(lblUsername);

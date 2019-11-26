@@ -23,6 +23,9 @@ public class Group extends Invite{
 		this.nome = nome;
 	}
 	
+	public Group() {
+		// TODO Auto-generated constructor stub
+	}
 	public String getNome() {
 		return nome;
 	}

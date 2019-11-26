@@ -3,11 +3,6 @@ package reunio;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import reunioGUI.GUIFactory;
 import reunioGUI.LoginInterface;
 import reunioGUI.RegisterInterface;
@@ -25,9 +20,6 @@ public class Application {
 	
 	public static void main(String[] args) {
 		
-		Database d= new Database();
-		
-		
 		if (user == null)
 			if(!register)
 				factory= new LoginInterface();
@@ -42,13 +34,6 @@ public class Application {
 		}
 		
 		factory.createScreen();
-		
-//		Date date = new Date();
-//		
-//		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
-//	    String strDate= formatter.format(date);  
-//	    System.out.println(strDate);  
-//	    
 		
 	}
 

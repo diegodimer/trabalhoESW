@@ -2,6 +2,7 @@ package reunio;
 
 import java.util.List;
 
+import reunioExceptions.InvalidInviteException;
 import reunioExceptions.LoginErrorException;
 
 public interface DataPersistenceInterface {
@@ -48,7 +49,7 @@ public interface DataPersistenceInterface {
     public Curso getCurso(int ID);
     
     // funções de adicionar/remover notificação
-    public void addInvite(Invite invite);
+    public void addInvite(Invite invite) throws InvalidInviteException;
     public void deleteInvite(Invite invite);
     
     // função para adicionar usuário a grupo
@@ -74,5 +75,6 @@ public interface DataPersistenceInterface {
     public boolean isGroupActive(Group group);
     public int getInviteType(Invite invite);
     
+    public void inviteConsistency(User usuario, Group grupo) throws InvalidInviteException;
     public List<Invite> listUserInvites(User user);
 }

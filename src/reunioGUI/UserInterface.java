@@ -37,8 +37,8 @@ public class UserInterface {
 	private JLabel imgRedDot;
 	private JScrollPane scrollMyGroups;
 	protected JList groupsJList;
-	protected JPanel panelGroups = new JPanel();
-	protected DefaultListModel<Group> groupList;
+	protected JPanel panelGroups;
+	protected DefaultListModel<Group> groupList = new DefaultListModel<Group>();;
 	protected JTable table;
 	@SuppressWarnings("serial")
 	protected DefaultTableModel modelo = new DefaultTableModel() {
@@ -126,7 +126,7 @@ public class UserInterface {
 					notificacoes.remove(inv);
 					updateRedDot(frame);
 					pesquisar(modelo, frame);
-					myGroupsBox(frame);
+					listMyGroups();
 					updateFrame();
 				}
 			});
@@ -228,11 +228,8 @@ public class UserInterface {
     }
 	
 	protected void myGroupsBox(JFrame frame) {
-		groupList = new DefaultListModel<Group>();
-		for(Group a: usuario.listMyGroups()) {
-			groupList.addElement(a);
-		}
-		
+		listMyGroups();
+		panelGroups = new JPanel();
 		scrollMyGroups = new JScrollPane();
 		scrollMyGroups.setBounds(66, 221, 419, 93);
 		frame.getContentPane().add(scrollMyGroups);
@@ -247,6 +244,13 @@ public class UserInterface {
 		groupsJList = new JList(groupList);
 		groupsJList.setSelectedIndex(0);
 		panelGroups.add(groupsJList);
+	}
+
+	protected void listMyGroups() {
+		groupList.removeAllElements();
+		for(Group a: usuario.listMyGroups()) {
+			groupList.addElement(a);
+		}
 	}
 	
 	public List<Invite> getNotificacoes() {
